@@ -26,6 +26,12 @@
         owner: nginx
         group: nginx
         mode: '0644'
+    - name: Gather network facts
+      ansible.builtin.setup:
+        gather_subset:
+          - '!all'
+          - '!min'
+          - 'default_ipv4'
     - name: Deploy index.html template
       ansible.builtin.template:
         src: nginx/index.html.j2
@@ -34,7 +40,7 @@
         group: nginx
         mode: '0644'
       vars:
-        server_ip: "{{ ansible_default_ipv4.address }}"
+        server_ip: "{{ ansible_facts.default_ipv4.address }}"
     - name: Test nginx configuration
       ansible.builtin.command: nginx -t
       register: nginx_test
